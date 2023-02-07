@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="ERROR">
+    <Appenders>
+        <Console name="Console-Appender" target="SYSTEM_OUT">
+            <PatternLayout pattern="[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %m%n"/>
+        </Console>
+        <Routing name="MyRoutingAppender">
+            <Routes pattern="$${ctx:ROUTING_KEY}">
+                <Route>
+                    <RollingFile
+                            name="appender-${ctx:ROUTING_KEY}"
+                            fileName="Logs/${ctx:ROUTING_KEY}/Execution.log"
+                            filePattern="Logs/${ctx:ROUTING_KEY}/$${date:yyyy-MM-dd}/Application-%d{yyyy-MM-dd}-%i.log"
+                            append="false">
+                        <PatternLayout>
+                            <Pattern>[${ctx:ROUTING_KEY} %-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %m%n</Pattern>
+                        </PatternLayout>
+                        <Policies>
+                            <TimeBasedTriggeringPolicy/>
+                            <SizeBasedTriggeringPolicy size="50MB"/>
+                        </Policies>
+                        <DefaultRolloverStrategy max="5"/>
+                    </RollingFile>
+                </Route>
+            </Routes>
+        </Routing>
+    </Appenders>
+
+    <Loggers>
+        <Logger name="com.winjit.automation" level="debug" additivity="true">
+            <AppenderRef ref="MyRoutingAppender"/>
+        </Logger>
+
+        <Root level="info">
+            <AppenderRef ref="Console-Appender"/>
+        </Root>
+    </Loggers>
+</Configuration>
